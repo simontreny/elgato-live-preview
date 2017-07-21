@@ -1,0 +1,4 @@
+#!/bin/sh
+export DYLD_INSERT_LIBRARIES=libelgato_x264_hook.dylib
+export DYLD_LIBRARY_PATH="${X264_LIBRARY_DIR}"
+"${GAME_CAPTURE_HD_PATH}/Contents/MacOS/Game Capture HD"
