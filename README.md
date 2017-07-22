@@ -1,4 +1,4 @@
-# elgato-live-preview
+# Elgato Live Preview
 The Elgato Game Capture HD application (GCHD) for macOS allows the user to get a low-latency live-preview (called *"Instant Gameview"*) of the content being captured by the Elgato HD60S.
 Unfortunately (as of version 2.6.1), the framerate of this preview is quite choppy, making it barely usable for those who intend to play directly within this view.
 
