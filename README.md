@@ -12,8 +12,8 @@ It means that the video encoder used by the GCHD application gets uncompressed f
 
 This project is made of two parts :
 * The **x264_hook** library that intercepts calls to the x264 library (software video encoder used by GCHD).
-To achieve that, it uses the `dyld_interposing` feature from the DYLD loader on macOS.
-With this mecanism, it retrieves uncompressed YUV420P frames sent to the `x264_encoder_encode()` function.
+To achieve this, it uses the `dyld_interposing` feature from the DYLD loader on macOS.
+With this, it retrieves uncompressed YUV420P frames sent to the `x264_encoder_encode()` function.
 These frames are made available to external softwares through a Unix domain socket (located at `/tmp/elgato_raw_frames`)
 * The **live_preview** OpenGL application that receives uncompressed frames from the socket and displays them.
 This application also applies a sharpen filter on the displayed frames to improve image quality when the image is stretched.
@@ -24,7 +24,7 @@ To run the live-preview, you first need to launch the GCHD application with the 
 cd elgato-live-preview
 ./startGameCaptureHD.sh
 ```
-It assumes that the GCHD application is installed at its default path (`/Applications//Applications/Game\ Capture\ HD.app`). As it intercepts software encoder functions, **hardware encoding has to be disabled** in the HD60S settings from GCHD. If everything went well, you should see the following line in the terminal: `Frame-server started successfully`.
+It assumes that the GCHD application is installed at its default path (`/Applications//Applications/Game\ Capture\ HD.app`). In order to intercept **software** encoder functions, **hardware encoding has to be disabled** in the HD60S settings from GCHD. If everything went well, you should see the following line in the terminal: `Frame-server started successfully`.
 
 Now, you can run the live-preview application by opening a terminal and launching the *elgato_live_preview* executable:
 ```
@@ -62,3 +62,8 @@ cmake ..
 make
 ```
 The *elgato_live_preview* executable will be generated.
+
+## What's next ##
+* OBS plugin that reads the Unix domain socket
+* Intercept calls made to the hardware encoder (VideoToolbox framework)
+* Settings for the sharpen filter
