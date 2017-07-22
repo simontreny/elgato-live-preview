@@ -20,14 +20,13 @@ void x264_encoder_close_hook(x264_t* h) {
 }
 
 int x264_encoder_encode_hook(x264_t* h, x264_nal_t** pp_nal, int* pi_nal, x264_picture_t* pic_in, x264_picture_t* pic_out) {
-    if (frame_server_client_connected() || frame_server_accept_incoming_client()) {
-        x264_param_t param;
-        x264_encoder_parameters(h, &param);
+    frame_server_accept_incoming_clients();
 
-        assert(param.i_csp == X264_CSP_I420);
-        int dataLength = ((param.i_width * param.i_height) * 3) / 2;
-        frame_server_send_frame(param.i_width, param.i_height, param.i_csp, dataLength, pic_in->img.plane[0]);
-    }
+    x264_param_t param;
+    x264_encoder_parameters(h, &param);
+    assert(param.i_csp == X264_CSP_I420);
+    int dataLength = ((param.i_width * param.i_height) * 3) / 2;
+    frame_server_send_frame(param.i_width, param.i_height, param.i_csp, dataLength, pic_in->img.plane[0]);
 
     // Disable x264_encoder_encode() by default as software-encoding can use too much CPU
     if (getenv("X264_HOOK_ENCODE_ENABLED") != NULL) {
