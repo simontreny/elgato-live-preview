@@ -1,22 +1,36 @@
 # elgato-live-preview
-The Elgato Game Capture HD software (GCHD) for macOS allows the user to get a low-latency live-preview (called *"Instant Gameview"*) of the content being captured by the Elgato HD60S.
+The Elgato Game Capture HD application (GCHD) for macOS allows the user to get a low-latency live-preview (called *"Instant Gameview"*) of the content being captured by the Elgato HD60S.
 Unfortunately (as of version 2.6.1), the framerate of this preview is quite choppy, making it barely usable for those who intend to play directly within this view.
 
-This project aims to fix this issue by providing an external app that display the frames captured by the device. This app offers two advantages compared to the official live-preview :
+This project aims to fix this issue by providing an external app that display the uncompressed frames captured by the device. This app offers two advantages compared to the official live-preview :
 * No framedrops
 * Improved image quality when the image is stretched (e.g. on a 5K iMac screen) thanks to a sharpen filter
 
 ## How it works ##
 This project is based on the observation that while the preview is choppy, the recorded videos have stable 60fps.
-It means that the video encoder used by the GCHD software gets the uncompressed frames at a stable framerate.
+It means that the video encoder used by the GCHD application gets uncompressed frames at a stable framerate.
 
 This project is made of two parts :
 * The **x264_hook** library that intercepts calls to the x264 library (software video encoder used by GCHD).
 To achieve that, it uses the `dyld_interposing` feature from the DYLD loader on macOS.
-With this mecanism, it retrieves uncompressed YUV420P frames send to the `x264_encoder_encode()` function.
-These frames are made available to external softwares through Unix domain socket (located at `/tmp/elgato_raw_frames`)
-* The **live_preview** OpenGL application that receives uncompressed frames from the socket and display them.
+With this mecanism, it retrieves uncompressed YUV420P frames sent to the `x264_encoder_encode()` function.
+These frames are made available to external softwares through a Unix domain socket (located at `/tmp/elgato_raw_frames`)
+* The **live_preview** OpenGL application that receives uncompressed frames from the socket and displays them.
 This application also applies a sharpen filter on the displayed frames to improve image quality when the image is stretched.
+
+## How to run ##
+To run the live-preview, you first need to launch the GCHD application with the x264 hook installed. The easiest way to do that is to open a terminal and to launch the *startGameCaptureHD.sh* script:
+```
+cd elgato-live-preview
+./startGameCaptureHD.sh
+```
+It assumes that the GCHD application is installed at its default path (`/Applications//Applications/Game\ Capture\ HD.app`). As it intercepts software encoder functions, **hardware encoding has to be disabled** in the HD60S settings from GCHD. If everything went well, you should see the following line in the terminal: `Frame-server started successfully`.
+
+Now, you can run the live-preview application by opening a terminal and launching the *elgato_live_preview* executable:
+```
+cd elgato-live-preview
+./elgato_live_preview
+```
 
 ## How to build ##
 ### Dependencies ###
