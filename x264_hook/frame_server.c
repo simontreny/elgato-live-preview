@@ -9,7 +9,7 @@
 #include <sys/un.h>
 #include <poll.h>
 
-#define SOCKET_PATH "/tmp/elgato_frame_server"
+#define SOCKET_PATH "/tmp/elgato_raw_frames"
 
 static void _frame_server_send_data(void* buf, size_t len);
 
@@ -53,6 +53,7 @@ void frame_server_stop() {
         return;
     }
 
+    close(_clientSocket);
     close(_socket);
     _socket = -1;
     _clientSocket = -1;
@@ -92,7 +93,7 @@ bool frame_server_accept_incoming_client() {
     }
 }
 
-void frame_server_send_frame(int width, int height, int colorspace, uint8_t* planes) {
+void frame_server_send_frame(int width, int height, int colorspace, int dataLen, uint8_t* data) {
     if (_clientSocket < 0) {
         fprintf(stderr, "Warning: cannot send frame as no client connected to frame-server\n");
         return;
@@ -102,7 +103,8 @@ void frame_server_send_frame(int width, int height, int colorspace, uint8_t* pla
     _frame_server_send_data(&width, sizeof(width));
     _frame_server_send_data(&height, sizeof(height));
     _frame_server_send_data(&colorspace, sizeof(colorspace));
-    _frame_server_send_data(planes, ((width * height) * 3) / 2);
+    _frame_server_send_data(&dataLen, sizeof(dataLen));
+    _frame_server_send_data(data, dataLen);
 }
 
 static void _frame_server_send_data(void* buf, size_t len) {
