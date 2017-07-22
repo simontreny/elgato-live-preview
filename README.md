@@ -32,6 +32,8 @@ cd elgato-live-preview
 ./elgato_live_preview
 ```
 
+**Note:** To save CPU power, software encoding is actually disabled by *x264_hook* library. If you want still want software encoding in the GCHD application while using *elgato_live_preview*, you can start GHCD with the following command: `X264_HOOK_ENCODE_ENABLED=1 ./startGameCaptureHD.sh`
+
 ## How to build ##
 ### Dependencies ###
 To build this project, you'll need:
