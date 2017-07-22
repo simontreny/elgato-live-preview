@@ -41,7 +41,7 @@ cd elgato-live-preview
 ### OBS Plugin ###
 To display HD60S frames inside OBS Studio, you first need to install the plugin. To do so, copy `obs-elgato.so` to the plugins directory of OBS Studio (`/Applications/OBS.app/Contents/Resources/obs-plugins` if OBS is installed in `/Applications`).
 
-Then, launch the *startGameCaptureHD.sh* script (cf. previous section) and launchs OBS Studio. In OBS Studio, create a new *Elgago HD60S* source, and that's it.
+Then, launch the *startGameCaptureHD.sh* script (cf. previous section) and launch OBS Studio. In OBS Studio, create a new *Elgago HD60S* source and that's it.
 
 ## How to build ##
 ### Dependencies ###
