@@ -80,4 +80,4 @@ The *elgato_live_preview* executable will be generated.
 
 ## What's next ##
 * Intercept calls made to the hardware encoder (VideoToolbox framework)
-* Settings for the sharpen filter
+* Make the sharpen filter customizable
