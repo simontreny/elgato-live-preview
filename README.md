@@ -6,20 +6,24 @@ This project aims to fix this issue by providing an external app that display th
 * No framedrops
 * Improved image quality when the image is stretched (e.g. on a 5K iMac screen) thanks to a sharpen filter
 
+As a side-effect, this project allows to access uncompressed video-frames from the GCHD application. It means that third-party software like OBS Studio can use this to capture HD60S video with no extra latency or compression. As a proof-of-concept, this repository hosts an OBS plugin that does exactly that.
+
 ## How it works ##
 This project is based on the observation that while the preview is choppy, the recorded videos have stable 60fps.
 It means that the video encoder used by the GCHD application gets uncompressed frames at a stable framerate.
 
-This project is made of two parts :
-* The **x264_hook** library that intercepts calls to the x264 library (software video encoder used by GCHD).
+This project is made of 3 parts :
+* **x264_hook**: a library that intercepts calls made to the x264 library (software video encoder used by GCHD).
 To achieve this, it uses the `dyld_interposing` feature from the DYLD loader on macOS.
 With this, it retrieves uncompressed YUV420P frames sent to the `x264_encoder_encode()` function.
 These frames are made available to external softwares through a Unix domain socket (located at `/tmp/elgato_raw_frames`)
-* The **live_preview** OpenGL application that receives uncompressed frames from the socket and displays them.
+* **live_preview**: an OpenGL application that receives uncompressed frames from the socket and displays them.
 This application also applies a sharpen filter on the displayed frames to improve image quality when the image is stretched.
+* **obs_plugin**: a simple OBS plugin that receives uncompressed frames from the socket and displays them in a layer of OBS studio. Note that this is video only, no audio is captured (though a similar approach is probably possible for audio). **Disclaimer:** This plugin is a working proof-of-concept that has been tested with OBS Studio 19.0.3 only. I have no plan to maintain it as I do not use OBS personally.
 
 ## How to run ##
-To run the live-preview, you first need to launch the GCHD application with the x264 hook installed. The easiest way to do that is to open a terminal and to launch the *startGameCaptureHD.sh* script:
+### Live Preview ###
+To run the live-preview, you first need to launch the GCHD application with the x264 hook activated. The easiest way to do that is to open a terminal and to launch the *startGameCaptureHD.sh* script:
 ```
 cd elgato-live-preview
 ./startGameCaptureHD.sh
@@ -33,6 +37,11 @@ cd elgato-live-preview
 ```
 
 **Note:** To save CPU power, software encoding is actually disabled by *x264_hook* library. If you want still want software encoding in the GCHD application while using *elgato_live_preview*, you can start GHCD with the following command: `X264_HOOK_ENCODE_ENABLED=1 ./startGameCaptureHD.sh`
+
+### OBS Plugin ###
+To display HD60S frames inside OBS Studio, you first need to install the plugin. To do so, copy `obs-elgato.so` to the plugins directory of OBS Studio (`/Applications/OBS.app/Contents/Resources/obs-plugins` if OBS is installed in `/Applications`).
+
+Then, launch the *startGameCaptureHD.sh* script (cf. previous section) and launchs OBS Studio. In OBS Studio, create a new *Elgago HD60S* source, and that's it.
 
 ## How to build ##
 ### Dependencies ###
@@ -63,8 +72,12 @@ make
 ```
 The *elgato_live_preview* executable will be generated.
 
+### How to build obs_plugin ###
+* Clone the [OBS studio repository](https://github.com/jp9000/obs-studio)
+* Create a soft-link of the `obs_plugin` directory to `obs-studio/plugins/obs-elgato`
+* Add an entry for `obs-elgato` in `obs-studio/plugins/CMakeLists.txt`
+* Build OBS Studio again
+
 ## What's next ##
-* OBS plugin that reads the Unix domain socket
-* Allow multiple clients to the Unix domain socket
 * Intercept calls made to the hardware encoder (VideoToolbox framework)
 * Settings for the sharpen filter
