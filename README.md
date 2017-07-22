@@ -65,5 +65,6 @@ The *elgato_live_preview* executable will be generated.
 
 ## What's next ##
 * OBS plugin that reads the Unix domain socket
+* Allow multiple clients to the Unix domain socket
 * Intercept calls made to the hardware encoder (VideoToolbox framework)
 * Settings for the sharpen filter

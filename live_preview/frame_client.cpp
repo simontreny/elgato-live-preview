@@ -1,5 +1,4 @@
 #include "frame_client.h"
-#include <sys/socket.h>
 #include <sys/types.h> 
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -96,10 +95,10 @@ bool FrameClient::readFrame(int fd) {
 void FrameClient::readFromSocket(int fd, void* buf, size_t len) {
     size_t recvLen = 0;
     while (recvLen < len) {
-        ssize_t l = recv(fd, ((uint8_t*)buf + recvLen), len - recvLen, 0);
+        ssize_t l = recv(fd, (uint8_t*)buf + recvLen, len - recvLen, 0);
         if (l < 0) {
-            perror("Unable to receive data from server");
-            throw std::runtime_error("Unable to receive data from server");
+            perror("Unable to receive data from frame-server");
+            throw std::runtime_error("Unable to receive data from frame-server");
         } else if (l == 0) {
             throw std::runtime_error("Connection-lost with frame-server");
         }
