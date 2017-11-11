@@ -20,3 +20,6 @@
 
 # Build products
 build
+
+# VS Code
+.vscode
