@@ -1,6 +1,6 @@
 #include <cstdlib>
 #include <cstdio>
-#include <GLFW/glfw3.h>
+#include "gl_includes.h"
 #include "frame_client.h"
 #include "frame_queue.h"
 #include "frame_renderer.h"
@@ -11,16 +11,20 @@ static void onKeyEvent(GLFWwindow* window, int key, int scancode, int action, in
 int main(int argc, char* argv[]) {
     glfwSetErrorCallback(onGlfwError);
     glfwInit();
-    
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
     GLFWwindow* window = glfwCreateWindow(1920, 1080, "Elgato Live Preview", NULL, NULL);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
     glfwSetKeyCallback(window, onKeyEvent);
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
-    
+
+    glewInit();
+
     FrameQueue frames(1);
     FrameRenderer frameRenderer;
 
@@ -32,7 +36,7 @@ int main(int argc, char* argv[]) {
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
         glViewport(0, 0, width, height);
-        
+
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 

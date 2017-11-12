@@ -1,3 +1,5 @@
+#version 150
+
 uniform sampler2D texture;
 varying vec2 uv;
 varying vec2 screenSize;

@@ -1,68 +1,36 @@
 #include "frame_renderer.h"
 #include <cassert>
-#include "linmath.h"
 
 #define YUV420P_COLORSPACE 0x0001    // YUV 4:2:0 planar as defined in x264.h
 
+FrameRenderer::FrameRenderer(/*int colorspace*/) {
+    m_quad = std::make_shared<ScreenAlignedQuad>(Shader::fromFile(GL_FRAGMENT_SHADER, "shaders/yuvPlanarToRgb.glsl"));
+}
+
 FrameRenderer::~FrameRenderer() {
-    glDeleteBuffers(1, &m_vertexBuffer);
     glDeleteTextures(YUV_PLANES, m_yuvPlanarTextures);
 }
 
 void FrameRenderer::render(const Frame& frame, float windowRatio) {
     if (!m_setupDone) {
-        createShaders(frame.colorspace);
-        createVertexBuffer();
         createTextures(frame);
         m_setupDone = true;
     }
 
-    m_shaderProgram->use();
-    updateVertexBuffer((float)frame.width / frame.height, windowRatio);
     updateTextures(frame);
-
-    glEnableVertexAttribArray(m_posLocation);
-    glVertexAttribPointer(m_posLocation, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 
     for (int i = 0; i < YUV_PLANES; i++) {
         glActiveTexture(GL_TEXTURE0 + i);
         glBindTexture(GL_TEXTURE_2D, m_yuvPlanarTextures[i]);
-        glUniform1i(m_yuvPlanarTextureLocations[i], i);
+        // glUniform1i(m_yuvPlanarTextureLocations[i], i);
     }
 
-    glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-}
+    GLuint program = m_quad->getShaderProgram()->getHandle();
+    glUniform1i(glGetUniformLocation(program, "yTex"), 0);
+    glUniform1i(glGetUniformLocation(program, "uTex"), 1);
+    glUniform1i(glGetUniformLocation(program, "vTex"), 2);
 
-void FrameRenderer::createShaders(int colorspace) {
-    assert(colorspace == YUV420P_COLORSPACE);
-
-    m_shaderProgram = ShaderProgram::create(
-        Shader::fromFile(GL_VERTEX_SHADER, "shaders/screenAlignedQuad.glsl"),
-        Shader::fromFile(GL_FRAGMENT_SHADER, "shaders/yuvPlanarToRgb.glsl"));
-
-    m_posLocation = glGetAttribLocation(m_shaderProgram->getHandle(), "pos");
-    m_yuvPlanarTextureLocations[YUV_Y_PLANE_INDEX] = glGetUniformLocation(m_shaderProgram->getHandle(), "yTex");
-    m_yuvPlanarTextureLocations[YUV_U_PLANE_INDEX] = glGetUniformLocation(m_shaderProgram->getHandle(), "uTex");
-    m_yuvPlanarTextureLocations[YUV_V_PLANE_INDEX] = glGetUniformLocation(m_shaderProgram->getHandle(), "vTex");
-}
-
-void FrameRenderer::createVertexBuffer() {
-    glGenBuffers(1, &m_vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), NULL, GL_DYNAMIC_DRAW);
-}
-
-void FrameRenderer::updateVertexBuffer(float frameRatio, float windowRatio) {
-    static struct { float x, y; } vertices[4] = {
-        { -1.0f,  1.0f },
-        { -1.0f, -1.0f },
-        {  1.0f,  1.0f },
-        {  1.0f, -1.0f }
-    };
-
-    glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+    m_quad->render();
 }
 
 void FrameRenderer::createTextures(const Frame& frame) {
