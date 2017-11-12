@@ -15,6 +15,7 @@ set(HEADER_FILES
     frame_renderer.h
     gl_includes.h
     non_copyable.h
+    render_to_texture.h
     screen_aligned_quad.h
     shader.h
     utils.h)
@@ -25,6 +26,7 @@ set(SRC_FILES
     frame_queue.cpp
     frame_renderer.cpp
     main.cpp
+    render_to_texture.cpp
     screen_aligned_quad.cpp
     shader.cpp
     utils.cpp)

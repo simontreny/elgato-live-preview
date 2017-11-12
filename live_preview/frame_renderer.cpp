@@ -25,12 +25,11 @@ void FrameRenderer::render(const Frame& frame, float windowRatio) {
         // glUniform1i(m_yuvPlanarTextureLocations[i], i);
     }
 
-    GLuint program = m_quad->getShaderProgram()->getHandle();
-    glUniform1i(glGetUniformLocation(program, "yTex"), 0);
-    glUniform1i(glGetUniformLocation(program, "uTex"), 1);
-    glUniform1i(glGetUniformLocation(program, "vTex"), 2);
-
-    m_quad->render();
+    m_quad->bind();
+    glUniform1i(m_quad->getShaderProgram()->getUniformLocation("yTex"), 0);
+    glUniform1i(m_quad->getShaderProgram()->getUniformLocation("uTex"), 1);
+    glUniform1i(m_quad->getShaderProgram()->getUniformLocation("vTex"), 2);
+    m_quad->draw();
 }
 
 void FrameRenderer::createTextures(const Frame& frame) {

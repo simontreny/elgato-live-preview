@@ -59,6 +59,10 @@ GLuint ShaderProgram::getHandle() const {
     return m_handle;
 }
 
+GLuint ShaderProgram::getUniformLocation(const std::string& uniformName) const {
+    return glGetUniformLocation(m_handle, uniformName.c_str());
+}
+
 void ShaderProgram::use() const {
     glUseProgram(m_handle);
 }

@@ -10,7 +10,8 @@ public:
     ~ScreenAlignedQuad();
 
     std::shared_ptr<ShaderProgram> getShaderProgram() const;
-    void render() const;
+    void bind() const;
+    void draw() const;
 
 private:
     std::shared_ptr<ShaderProgram> m_program;

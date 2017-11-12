@@ -26,6 +26,7 @@ public:
     ~ShaderProgram();
 
     GLuint getHandle() const;
+    GLuint getUniformLocation(const std::string& uniformName) const;
     void use() const;
 
 private:

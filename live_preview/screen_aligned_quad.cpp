@@ -18,14 +18,18 @@ std::shared_ptr<ShaderProgram> ScreenAlignedQuad::getShaderProgram() const {
     return m_program;
 }
 
-void ScreenAlignedQuad::render() const {
+void ScreenAlignedQuad::bind() const {
     m_program->use();
+}
+
+void ScreenAlignedQuad::draw() const {
+    bind();
 
     updateVertexArray();
 
     glBindVertexArray(m_vertexArray);
-    glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
