@@ -1,6 +1,8 @@
 #include "screen_aligned_quad.h"
 
-ScreenAlignedQuad::ScreenAlignedQuad(std::shared_ptr<Shader> fragmentShader) {
+ScreenAlignedQuad::ScreenAlignedQuad(std::shared_ptr<Shader> fragmentShader, bool invertY)
+    : m_invertY(invertY) {
+
     m_program = std::make_shared<ShaderProgram>(
         Shader::fromFile(GL_VERTEX_SHADER, "shaders/screenAlignedQuad.glsl"),
         fragmentShader
@@ -30,6 +32,8 @@ void ScreenAlignedQuad::draw() const {
     glBindVertexArray(m_vertexArray);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    glUniform1i(m_program->getUniformLocation("invertY"), m_invertY);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }

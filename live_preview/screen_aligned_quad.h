@@ -6,7 +6,7 @@
 
 class ScreenAlignedQuad {
 public:
-    ScreenAlignedQuad(std::shared_ptr<Shader> fragmentShader);
+    ScreenAlignedQuad(std::shared_ptr<Shader> fragmentShader, bool invertY = false);
     ~ScreenAlignedQuad();
 
     std::shared_ptr<ShaderProgram> getShaderProgram() const;
@@ -17,6 +17,7 @@ private:
     std::shared_ptr<ShaderProgram> m_program;
     GLuint m_vertexArray;
     GLuint m_vertexBuffer;
+    bool m_invertY;
 
     void createVertexArray();
     void updateVertexArray() const;

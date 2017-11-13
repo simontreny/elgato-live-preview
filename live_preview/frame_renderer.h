@@ -17,7 +17,6 @@ public:
 
 private:
     std::shared_ptr<ScreenAlignedQuad> m_quad;
-;
     GLuint m_uyvyTexture = 0;
     GLuint m_yuvPlanarTextures[YUV_PLANES] = { 0 };
     bool m_setupDone = false;

@@ -4,6 +4,7 @@
 #include "frame_client.h"
 #include "frame_queue.h"
 #include "frame_renderer.h"
+#include "post_process.h"
 
 static void onGlfwError(int error, const char* description);
 static void onKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -32,6 +33,8 @@ int main(int argc, char* argv[]) {
     frameClient.setFrameReceivedHandler([&frames](const Frame& frame) { frames.enqueue(frame); });
     frameClient.start();
 
+    PostProcess sharpenFilter(1920, 1080, Shader::fromFile(GL_FRAGMENT_SHADER, "shaders/sharpen.glsl"));
+
     while (!glfwWindowShouldClose(window)) {
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
@@ -42,7 +45,9 @@ int main(int argc, char* argv[]) {
 
         Frame frame;
         if (frames.tryDequeue(&frame, 50)) {
+            sharpenFilter.bind();
             frameRenderer.render(frame, (float)width / height);
+            sharpenFilter.draw();
         }
 
         glfwSwapBuffers(window);

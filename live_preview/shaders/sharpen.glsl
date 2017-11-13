@@ -1,33 +1,19 @@
-#version 150
+#version 330
 
-uniform sampler2D texture;
-varying vec2 uv;
-varying vec2 screenSize;
-
-vec2 stepX = 1.0 / screenSize.x;
-vec2 stepY = 1.0 / screenSize.y;
+uniform sampler2D tex;
+in vec2 texCoords;
+out vec4 fragColor;
 
 void main() {
-    vec2 offset[5];
-    offset[0] = vec2(uv.x, uv.y - stepY);
-    offset[1] = vec2(uv.x - stepX, uv.y);
-    offset[2] = vec2(uv.x, uv.y);
-    offset[3] = vec2(uv.x + stepX, uv.y);
-    offset[4] = vec2(uv.x, uv.y + stepY);
-
-    float kernel[5];
-    kernel[0] = -0.75;
-    kernel[1] = -0.75;
-    kernel[2] = 4.;
-    kernel[3] = -0.75;
-    kernel[4] = -0.75;
+    const ivec2 offset[5] = ivec2[](ivec2(0, -1), ivec2(-1, 0), ivec2(0, 0), ivec2(1, 0), ivec2(0, 1));
+    const float kernel[5] = float[](-0.75, -0.75, 4.0, -0.75, -0.75);
 
     vec4 sum = vec4(0.0);
-    int i;
-    for (i = 0; i < 5; i++) {
-        vec4 color = texture2D(texture, offset[i]);
-        sum += color * kernel[i];
-    }
+    sum += kernel[0] * textureOffset(tex, texCoords, offset[0]);
+    sum += kernel[1] * textureOffset(tex, texCoords, offset[1]);
+    sum += kernel[2] * textureOffset(tex, texCoords, offset[2]);
+    sum += kernel[3] * textureOffset(tex, texCoords, offset[3]);
+    sum += kernel[4] * textureOffset(tex, texCoords, offset[4]);
 
-    gl_FragData[0] = sum;
+    fragColor = sum;
 }
