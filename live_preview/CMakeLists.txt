@@ -39,5 +39,5 @@ target_link_libraries(elgato_live_preview ${OPENGL_gl_LIBRARY} GLEW::GLEW glfw)
 
 configure_file(shaders/screenAlignedQuad.glsl shaders/screenAlignedQuad.glsl COPYONLY)
 configure_file(shaders/sharpen.glsl shaders/sharpen.glsl COPYONLY)
-configure_file(shaders/uyvyToYuvPlanar.glsl shaders/uyvyToYuvPlanar.glsl COPYONLY)
+configure_file(shaders/uyvyToRgb.glsl shaders/uyvyToRgb.glsl COPYONLY)
 configure_file(shaders/yuvPlanarToRgb.glsl shaders/yuvPlanarToRgb.glsl COPYONLY)

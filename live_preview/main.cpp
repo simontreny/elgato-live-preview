@@ -13,8 +13,8 @@ int main(int argc, char* argv[]) {
     glfwSetErrorCallback(onGlfwError);
     glfwInit();
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
     glewInit();
 
     FrameQueue frames(1);
-    FrameRenderer frameRenderer;
+    FrameRenderer frameRenderer(1920, 1080, UYVY422);
 
     FrameClient frameClient;
     frameClient.setFrameReceivedHandler([&frames](const Frame& frame) { frames.enqueue(frame); });
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
         Frame frame;
         if (frames.tryDequeue(&frame, 50)) {
             sharpenFilter.bind();
-            frameRenderer.render(frame, (float)width / height);
+            frameRenderer.render(frame);
             sharpenFilter.draw();
         }
 

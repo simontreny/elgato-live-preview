@@ -34,6 +34,12 @@ GLuint RenderToTexture::addTargetTexture(int width, int height, GLenum format) {
     m_targetTextures.push_back(texture);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + textureIndex, texture, 0);
 
+    std::vector<GLenum> drawBuffers;
+    for (int i = 0; i < m_targetTextures.size(); i++) {
+        drawBuffers.push_back(GL_COLOR_ATTACHMENT0 + i);
+    }
+    glDrawBuffers(m_targetTextures.size(), &drawBuffers.front());
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     return texture;

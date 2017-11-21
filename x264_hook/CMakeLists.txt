@@ -1,3 +1,5 @@
+set(CMAKE_OSX_DEPLOYMENT_TARGET "10.10")
+
 cmake_minimum_required(VERSION 3.0)
 project(elgato-x264-hook)
 
@@ -6,6 +8,9 @@ set(GAME_CAPTURE_HD_PATH "/Applications/Game Capture HD.app")
 set(X264_LIBRARY_DIR "${GAME_CAPTURE_HD_PATH}/Contents/Frameworks/ESPlayerFramework.framework/PlugIns/Elgato MPEG Support.component/Contents/Frameworks")
 set(X264_LIBRARY "${X264_LIBRARY_DIR}/libx264.dylib")
 
+find_library(VIDEOTOOLBOX_LIBRARY VideoToolbox)
+find_library(COREVIDEO_LIBRARY CoreVideo)
+
 set(HEADER_FILES
     frame_server.h
     x264.h
@@ -13,9 +18,10 @@ set(HEADER_FILES
 
 set(SRC_FILES
     frame_server.c
-    x264_hook.c)
+    x264_hook.c
+    videotoolbox_hook.c)
 
 add_library(elgato_x264_hook SHARED ${HEADER_FILES} ${SRC_FILES})
-target_link_libraries(elgato_x264_hook "${X264_LIBRARY}")
+target_link_libraries(elgato_x264_hook "${X264_LIBRARY}" "${VIDEOTOOLBOX_LIBRARY}" "${COREVIDEO_LIBRARY}")
 
 configure_file(startGameCaptureHD.sh.in startGameCaptureHD.sh)
