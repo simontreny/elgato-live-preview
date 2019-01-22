@@ -1,5 +1,5 @@
 #include <unistd.h>
-#include <sys/types.h> 
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <obs-module.h>
@@ -109,7 +109,7 @@ static bool read_frame(struct elgato_source* s, int fd) {
     if (!read_bytes(s, fd, &height, sizeof(height))) goto error;
     if (!read_bytes(s, fd, &colorspace, sizeof(colorspace))) goto error;
     if (!read_bytes(s, fd, &data_length, sizeof(data_length))) goto error;
-    
+
     da_reserve(s->buffer, data_length);
     uint8_t* data = s->buffer.array;
     if (!read_bytes(s, fd, data, data_length)) goto error;
@@ -117,15 +117,11 @@ static bool read_frame(struct elgato_source* s, int fd) {
     debug("Received %dx%d frame", width, height);
 
     struct obs_source_frame frame = {
-        .format      = VIDEO_FORMAT_I420,
+        .format      = VIDEO_FORMAT_UYVY,
         .width       = width,
         .height      = height,
         .data[0]     = data,
-        .data[1]     = data + (width * height),
-        .data[2]     = data + (width * height) + (width * height) / 4,
-        .linesize[0] = width,
-        .linesize[1] = width / 2,
-        .linesize[2] = width / 2,
+        .linesize[0] = 0,
         .timestamp   = os_gettime_ns()
     };
     video_format_get_parameters(VIDEO_CS_DEFAULT, VIDEO_RANGE_PARTIAL,
